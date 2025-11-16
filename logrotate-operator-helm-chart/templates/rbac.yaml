@@ -2,7 +2,9 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: logrotate-operator
+  name: {{ include "logrotate-operator.fullname" . }}
+  labels:
+    {{- include "logrotate-operator.labels" . | nindent 4 }}
 rules:
   - apiGroups: [""]
     resources: ["pods"]
@@ -10,20 +12,22 @@ rules:
   - apiGroups: ["batch"]
     resources: ["cronjobs", "jobs"]
     verbs: ["*"]
-  - apiGroups: ["acba.am"]
+  - apiGroups: ["{{ .Values.crd.group }}"]
     resources: ["logrotates"]
     verbs: ["*"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: logrotate-operator
+  name: {{ include "logrotate-operator.fullname" . }}
+  labels:
+    {{- include "logrotate-operator.labels" . | nindent 4 }}
 subjects:
-- kind: ServiceAccount
-  name: {{ include "logrotate-operator.serviceAccountName" . }}
-  namespace: {{ .Values.operator.namespace }}
+  - kind: ServiceAccount
+    name: {{ include "logrotate-operator.serviceAccountName" . }}
+    namespace: {{ .Values.operator.namespace }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: logrotate-operator
+  name: {{ include "logrotate-operator.fullname" . }}
 {{- end }}

@@ -1,22 +1,48 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: logrotate-operator
+  name: {{ include "logrotate-operator.fullname" . }}
   namespace: {{ .Values.operator.namespace }}
+  labels:
+    {{- include "logrotate-operator.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.operator.replicas }}
   selector:
     matchLabels:
-      app: logrotate-operator
+      {{- include "logrotate-operator.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: logrotate-operator
+        {{- include "logrotate-operator.selectorLabels" . | nindent 8 }}
     spec:
       serviceAccountName: {{ include "logrotate-operator.serviceAccountName" . }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        fsGroup: 65534
       containers:
         - name: operator
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
           command: ["kopf"]
           args: ["run", "--standalone", "/app/operator-logrotate.py"]
+          workingDir: /app
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10

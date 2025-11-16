@@ -4,7 +4,7 @@ image:
   pullPolicy: IfNotPresent
 
 operator:
-  namespace: logrotate-system
+  namespace: logrotate-operator
   replicas: 1
 
 serviceAccount:
@@ -13,6 +13,3 @@ serviceAccount:
 
 rbac:
   create: true
-
-crd:
-  group: awsmgroup.teslanet.am
