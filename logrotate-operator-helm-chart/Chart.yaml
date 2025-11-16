@@ -1,0 +1,6 @@
+apiVersion: v2
+name: logrotate-operator
+description: Kubernetes Operator for Log Rotation using Kopf
+type: application
+version: 1.0.0
+appVersion: "1.0"
