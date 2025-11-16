@@ -15,8 +15,8 @@ spec:
     spec:
       serviceAccountName: {{ include "logrotate-operator.serviceAccountName" . }}
       containers:
-      - name: operator
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        command: ["kopf"]
-        args: ["run", "--standalone", "/app/operator-logrotate.py"]
+        - name: operator
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["kopf"]
+          args: ["run", "--standalone", "/app/operator-logrotate.py"]
